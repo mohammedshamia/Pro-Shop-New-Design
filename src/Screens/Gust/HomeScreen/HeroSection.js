@@ -14,14 +14,13 @@ import {
   SideBox,
 } from "./HomeScreen.Styles";
 import Button from "../../../Components/Button/Button";
-import slideImage from "../../../Assets/img1.PNG";
 import { useState } from "react";
 
 const styles = {
   root: {
     position: "relative",
     width: "100%",
-    height: 678,
+    height: window.innerWidth > 1100 ? 678 : 800,
   },
 };
 
@@ -53,6 +52,7 @@ function HeroSection({ sliderProducts }) {
                   {item.description.substring(0, 80)}
                 </Typography>
                 <Button
+                  link={`/product/${item._id}/${item.name}`}
                   text="Shop now"
                   width={"220px"}
                   borderRadius={20}

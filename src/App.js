@@ -1,35 +1,29 @@
-import { MainContainer } from "./Global.Styles";
+import { MainContainer, SpinnerContainer } from "./Global.Styles";
 import NavBar from "./Components/NavBar/NavBar";
-import HomeScreen from "./Screens/Gust/HomeScreen/HomeScreen";
 import { Route, Switch } from "react-router";
-import Login from "./Screens/Auth/Login/Login";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import NotFoundScreen from "./Screens/Gust/NotFoundScreen/NotFoundScreen";
+import AuthRouter from "./Router/AuthRouter";
+import GuestRouter from "./Router/GuestRouter";
+import UserRouter from "./Router/UserRouter";
+import ErrorBoundary from "./Components/ErrorBoundary/ErrorBoundary";
+import { Suspense } from "react";
 
 function App() {
-  /*
-  const userFromLocalStorage = JSON.parse(localStorage.getItem("user"));
-
-  const [user, setUser] = useState(userFromLocalStorage);*/
-
-  const state = useSelector((state) => state);
-
-  console.log("store state", state);
-
   return (
     <MainContainer>
-      <NavBar />
-      <Switch>
-        <Route path={"/"} exact={true} component={HomeScreen} />
-        {state.userDetails.user._id ? null : (
-          <Route
-            path={"/login"}
-            component={() => {
-              return <Login />;
-            }}
-          />
-        )}
-      </Switch>
+      <Suspense fallback={<SpinnerContainer />}>
+        <ErrorBoundary>
+          <NavBar />
+          <Switch>
+            {GuestRouter()}
+            {UserRouter()}
+            {AuthRouter()}
+            <Route key={"65944"} path={"*"}>
+              <NotFoundScreen />
+            </Route>
+          </Switch>
+        </ErrorBoundary>
+      </Suspense>
     </MainContainer>
   );
 }

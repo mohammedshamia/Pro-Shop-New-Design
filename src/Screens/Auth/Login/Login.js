@@ -8,41 +8,30 @@ import {
 } from "../../../Components/FormInput/FormInput.Styles";
 import { Form, Formik } from "formik";
 import { loginSchema } from "../../../Valedation";
-import axios from "axios";
-import { useState } from "react";
 import { useHistory } from "react-router";
 import { loginAction } from "../../../Redux/User/userActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocationWithQuery } from "react-router-query-hooks";
 
 function Login() {
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
+  const state = useSelector((store) => store);
+  const error = state.userDetails.error;
+  const isLoading = state.userDetails.isLoading;
+  const locationQuery = useLocationWithQuery();
+  const {
+    query: { pathname, review, rating },
+  } = locationQuery;
 
   const handleSaveChanges = async (values) => {
-    setError("");
-    setIsLoading(true);
-    // values ={
-    //             email: "",
-    //             password: "",
-    //           }
-
-    try {
-      const response = await axios.post("/users/login", values);
-      console.log(response);
-
-      dispatch(loginAction(response.data));
-
-      // Set user to localStorage
-      localStorage.setItem("user", JSON.stringify(response.data));
-
-      history.push("/");
-    } catch (e) {
-      console.log(e.response);
-      setError(e.response.data.message);
-    }
-    setIsLoading(false);
+    dispatch(
+      loginAction(
+        values,
+        history,
+        pathname ? `${pathname}?review=${review}&rating=${rating}` : ""
+      )
+    );
   };
 
   return (
@@ -134,6 +123,7 @@ function Login() {
         </Typography>
         <Hr />
         <Button
+          link={"/register"}
           width={"100%"}
           borderRadius={20}
           text={"Sign up now"}
